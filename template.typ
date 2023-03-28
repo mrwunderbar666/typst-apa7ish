@@ -16,13 +16,14 @@
   disclosure: none,
   language: "en",
   fontfamily: "Linux Libertine",
+  papersize: "a4",
   body,
 ) = {
   // Set the document's basic properties.
   set document(author: authors.map(a => a.name), title: title)
   set page(numbering: "1", 
             number-align: center,
-            paper: "a4",
+            paper: papersize,
             margin: 33mm)
   set text(font: fontfamily, 
             lang: language, 
