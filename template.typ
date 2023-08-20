@@ -139,6 +139,7 @@
   )
 
   let affiliation_counter = counter("affiliation_counter")
+  affiliation_counter.update(1)
 
   align(center)[
     #for affiliation in authors_parsed.affiliations [
