@@ -8,70 +8,68 @@
 #let project(
   title: "",
   subtitle: none,
-  abstract: [],
+  abstract: none,
   authors: (),
   date: none,
   documenttype: none,
   keywords: none,
   disclosure: none,
+  funding: none,
+  anonymous: false,
   language: "en",
-  fontfamily: "Linux Libertine",
+  fontfamily: "Libertinus Serif",
   papersize: "a4",
   body,
 ) = {
   // Set the document's basic properties.
   set document(author: authors.map(a => a.name), title: title)
-  set page(numbering: "1", 
-            number-align: center,
+  // todo: dont show header on first (title) page
+  set page(numbering: "1",
             paper: papersize,
-            margin: 33mm)
-  set text(font: fontfamily, 
-            lang: language, 
+            number-align: top + right,
+            margin: 33mm,
+            header: {
+            context if counter(page).get().at(0) > 1 [
+              #smallcaps(lower(title))
+              #h(1fr)
+              #here().page()
+              ]
+            }
+            )
+  set text(font: fontfamily,
+            lang: language,
             size: normal-size)
 
   // Set paragraph spacing.
-  show par: set block(above: 0.58em, below: 0.58em)
-
+  // show par: set block(above: 0.58em, below: 0.58em)
+  set par(spacing: 0.58em)
 
   // Set Heading styles
   show heading: it => {
-    // Create the heading numbering.
-    let number = if it.numbering != none {
-      counter(heading).display(it.numbering)
-      h(7pt, weak: true)
-    }
+    // set textsize: normal-size)
 
-    // Level 1 headings are centered and bold.
-    // The other ones are run-in.
-    set text(size: normal-size, weight: "bold")
-    set par(first-line-indent: 0pt)
     if it.level == 1 {
-      set align(center)
-      set text(size: normal-size)
-      v(15pt, weak: true)
-      number
-      it.body
+    align(text(it, size: normal-size), center)
+    v(15pt, weak: true)
+    }
+    else {
+      let wght = "bold"
+      if it.level > 2 {
+        wght = "regular"
+      }
+      align(emph(text(it, size: normal-size, weight: wght)))
       v(normal-size, weak: true)
-    } else if it.level == 2 {
-      set text(size: normal-size)
-      v(normal-size, weak: true)
-      number
-      it.body
-      v(normal-size, weak: true)
-      } else {
-      v(11pt, weak: true)
-      number
-      let styled = if it.level == 2 { strong } else { emph }
-      styled(it.body + [. ])
-      h(7pt, weak: true)
     }
   }
 
-  // Bibliography
 
-  set bibliography(title: "References", style: "apa")
+  // Bibliography
+  set bibliography(title: "References", style: "american-psychological-association")
   show bibliography: set block(spacing: 0.58em)
   show bibliography: set par(first-line-indent: 0em)
+
+  // Figures
+  show figure: set block(above: 2em, below: 2em)
 
   // Title Page
   align(center)[
@@ -85,7 +83,7 @@
 
   // utility function: go through all authors and check their affiliations
   // purpose is to group authors with the same affiliations
-  // returns a dict with two keys: 
+  // returns a dict with two keys:
   // "authors" (modified author array)
   // "affiliations": array with unique affiliations
   let parse_authors(authors) = {
@@ -111,7 +109,7 @@
         }
       }
     }
-    (authors: parsed_authors, 
+    (authors: parsed_authors,
      affiliations: affiliations,
      corresponding: corresponding)
   }
@@ -125,6 +123,7 @@
   let authors_parsed = parse_authors(authors)
 
   // List Authors
+  if not anonymous {
   pad(
     top: 0.3em,
     bottom: 0.3em,
@@ -138,47 +137,56 @@
     ),
   )
 
+
   let affiliation_counter = counter("affiliation_counter")
   affiliation_counter.update(1)
 
   align(center)[
     #for affiliation in authors_parsed.affiliations [
-      #super(affiliation_counter.display("a"))#h(1pt)#emph(affiliation) #affiliation_counter.step() \
+      #context super(affiliation_counter.display("a"))#h(1pt)#emph(affiliation) #affiliation_counter.step() \
     ]
     #v(1em, weak: true)
     #date
     #v(2em, weak: true)
-
   ]
+  } else {
+    align(center)[
+      #date
+    ]
+  }
 
 
   set par(justify: true)
-
   // Abstract & Keywords
-  heading(outlined: false, numbering: none, text(11pt, weight: "regular", [Abstract]))
-  align(center)[
-    #block(width: 90%, [
-      #align(left)[
-        #abstract \
-        #v(1em, weak: true)
-        #if keywords != none [
-        #emph("Keywords: ") #keywords
+  if abstract != none {
+    heading(outlined: false, numbering: none, text(11pt, weight: "regular", [Abstract]))
+    align(center)[
+      #block(width: 90%, [
+        #align(left)[
+          #abstract \
+          #v(1em, weak: true)
+          #if keywords != none [
+          #emph("Keywords: ") #keywords
+          ]
         ]
-      ]
-      ]
-    )
-  ]
+        ]
+      )
+    ]
+  }
+
 
   let orcid(height: 10pt, o) = [
     #box(height: height, baseline: 10%, image("assets/orcid.svg") ) #link("https://orcid.org/" + o)
   ]
 
   // Author Note
+  if not anonymous {
+
   heading(outlined: false, numbering: none, text(11pt, weight: "bold", [Author Note]))
 
   // ORCID IDs
   for author in authors_parsed.authors [
-    #author.name #orcid(author.orcid) \ 
+    #author.name #orcid(author.orcid) \
   ]
   // Disclosures and Acknowledgements
   if disclosure != none [
@@ -186,18 +194,23 @@
   ] else [
     We have no conflicts of interest to disclose. \ ]
 
+  if funding != none [
+    #funding \
+  ]
+
   // Contact Information
-  [Correspondence concerning this article should be addressed to 
-   #authors_parsed.corresponding.name, 
-   #authors_parsed.corresponding.postal, 
+  [Correspondence concerning this article should be addressed to
+   #authors_parsed.corresponding.name,]
+   if "postal" in authors_parsed.corresponding [ #authors_parsed.corresponding.postal]
+   [
    Email: #link("mailto:" + authors_parsed.corresponding.email, authors_parsed.corresponding.email)
    ]
+   }
 
   pagebreak()
 
   // Main body.
-  set par(justify: true,
-          first-line-indent: 2em)
+  set par(first-line-indent: 2em)
 
   body
 }
