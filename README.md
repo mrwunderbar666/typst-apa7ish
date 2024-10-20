@@ -14,7 +14,7 @@ The following works already quite well:
 - Page headers and footers (show short title in header)
 - Option to anonymize the paper
 
-This is still not working:
+This is still not finished:
 
 - Tables: seeking to implement 3-part-tables (caption, content, and table notes)
 - figures
