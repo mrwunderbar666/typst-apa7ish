@@ -5,7 +5,7 @@
 #let large-size = 12pt
 
 
-#let project(
+#let conf(
   title: "",
   subtitle: none,
   abstract: none,

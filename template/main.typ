@@ -1,8 +1,6 @@
-#import "template.typ": *
+#import "../src/apa7ish.typ": *
 
-// Take a look at the file `template.typ` in the file panel
-// to customize this template and discover how it works.
-#show: project.with(
+#show: conf.with(
   title: "A Title is all you need",
   subtitle: "The impact of a good title on a paper's citations count",
   documenttype: "Research Article",
@@ -21,8 +19,6 @@
       affiliation: "University of Pennsylvania",
       orcid: "0000-1111-1111-1111")
   ),
-  // Insert your abstract after the colon, wrapped in brackets.
-  // Example: `abstract: [This is my abstract...]`
   abstract: [Title of a scientific paper is an important element that conveys the main message of the study to the readers.
   In this study, we investigate the impact of paper titles on citation count, and propose that the title alone has the highest impact on citation count.
   Using a dataset of 1000 scientific papers from various disciplines, we analyzed the correlation between the characteristics of paper titles, such as length, clarity, novelty, and citation count. Our results show that papers with clear,
@@ -33,9 +29,9 @@
   and creatively summarize the main message of their research, as it can have a significant impact on the success
   and visibility of their work.
 ],
-  date: "March 28, 2023",
+  date: "October 20, 2024",
   keywords: [content analysis, citation, bibliometrics],
-  funding: [This research received funding by the Ministry of Silly Walks (Grant ID: 123456)]
+  funding: [This research received funding by the Ministry of Silly Walks (Grant ID: 123456).]
 )
 
 = Introduction
