@@ -1,4 +1,5 @@
-#import "../src/apa7ish.typ": *
+#import "@preview/apa7-ish:0.1.0": *
+// #import "../src/apa7ish.typ": *
 
 #show: conf.with(
   title: "A Title is all you need",
