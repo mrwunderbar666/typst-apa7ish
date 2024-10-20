@@ -20,3 +20,26 @@ This is still not working:
 - figures
 - complete pandoc integration (template for pandoc to replace Latex-based workflows)
 - automatic calculation of page margins (like memoir-class for Latex)
+
+# Basic Usage
+
+The easiest way to get started is to edit the example file, which has sensible default values. Most fields in the configuration are optional and will safely be ignored (not rendered) when you set them to `none`.
+
+## Authors
+
+The `authors` setting expects an array of dictionaries with the following fields:
+
+```typst
+(
+  name: "First Name Last Name", // Name of author as it should appear on the paper title page
+  affiliation: "University, Department", // affiliation of author as it should appear on the title page
+  orcid: "0000-0000-0000-0000", // optional for author note
+  corresponding: true, // optional to mark an author as corresponding author
+  email: "email@upenn.edu", // optional email address, required if author is corresponding
+  postal: "Longer string", // optional postal address for corresponding author
+)
+```
+
+## Anonymization
+
+Sometimes you need to submit a paper without any author information. In such cases you can set `anonymous` to `false`.
