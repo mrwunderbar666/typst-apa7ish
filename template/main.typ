@@ -1,5 +1,5 @@
-#import "@preview/apa7-ish:0.1.0": *
-// #import "../src/apa7ish.typ": *
+// #import "@preview/apa7-ish:0.1.0": *
+#import "../src/apa7ish.typ": *
 
 #show: conf.with(
   title: "A Title is all you need",
@@ -14,7 +14,7 @@
       orcid: "0000-1111-1111-1111",
       corresponding: true),
       (name: "Ashish Vaswani",
-      affiliation: "Google Brain",
+      affiliation: ("Google Brain", "University of Pennsylvania"),
       orcid: "0000-1111-1111-1111"),
       (name: "Niklas Luhmann",
       affiliation: "University of Pennsylvania",
@@ -47,6 +47,29 @@ citations, which supports our hypothesis that the title alone has the highest im
 Our findings suggest that researchers should pay more attention to crafting effective titles that accurately
 and creatively summarize the main message of their research, as it can have a significant impact on the success
 and visibility of their work.
+
+#figure(
+  [
+  #table(
+    columns: 9,
+    align: (x, y) =>
+      if x == 0 { left }
+      else if y < 2 { center }
+      else { right }
+    ,
+    toprule,
+    table.header([], table.cell(colspan: 2, [Adelie]), table.cell(colspan: 2, [Chinstrap]), table.cell(colspan: 2, [Gentoo]), [$ F(2, 339) $], [$ eta^2 $]),
+    [Measure],[M],[SD],[M],[SD],[M],[SD],[],[],
+    midrule,
+    [Body mass (kg)],[3.7],[0.46],[3.73],[0.38],[5.08],[0.5],[343.63\*\*\*],[0.67],
+    [Flipper length (mm)],[189.95],[6.54],[195.82],[7.13],[217.19],[6.48],[594.8\*\*\*],[0.78],
+    [Bill length (mm)],[38.79],[2.66],[48.83],[3.34],[47.5],[3.08],[410.6\*\*\*],[0.71],
+    bottomrule
+  )
+  #tablenote([N = 344. \*\*\*p < .001. Data source: #cite(<palmerpenguins>, form: "prose"). For details see: https://allisonhorst.github.io/palmerpenguins/])
+  ],
+  caption: [Means, Standard Deviations, and One-Way Analyses of Variance of Penguin species observed at Palmer Station in Antarctica]
+)
 
 = Declaration of Interest Statement
 #label("declaration-of-interest-statement")

@@ -4,9 +4,17 @@
 #let normal-size = 11pt
 #let large-size = 12pt
 
+// Utilities for tables
+// thicknesses stolen from latex's booktabs package
+#let heavyrulewidth = 0.08em
+#let lightrulewidth = 0.05em
+#let toprule = table.hline(stroke: heavyrulewidth)
+#let midrule = table.hline(stroke: lightrulewidth)
+#let bottomrule = table.hline(stroke: heavyrulewidth)
+#let tablenote(body) = { align(left, [_Note_. #body]) }
 
 #let conf(
-  title: "",
+  title: "An Intriguing Title",
   subtitle: none,
   abstract: none,
   authors: (),
@@ -17,8 +25,10 @@
   funding: none,
   anonymous: false,
   language: "en",
-  fontfamily: "Libertinus Serif",
   papersize: "a4",
+  fontfamily: "Libertinus Serif",
+  text-number-type: "old-style",
+  text-number-width: "proportional",
   body,
 ) = {
   // Set the document's basic properties.
@@ -36,9 +46,12 @@
               ]
             }
             )
+
   set text(font: fontfamily,
             lang: language,
-            size: normal-size)
+            size: normal-size,
+            number-type: text-number-type,
+            number-width: text-number-width)
 
   // Set paragraph spacing.
   // show par: set block(above: 0.58em, below: 0.58em)
@@ -49,7 +62,7 @@
     // set textsize: normal-size)
 
     if it.level == 1 {
-    align(text(it, size: normal-size), center)
+    align(center, text(it, size: normal-size))
     v(15pt, weak: true)
     }
     else {
@@ -70,6 +83,19 @@
 
   // Figures
   show figure: set block(above: 2em, below: 2em)
+
+  // Tables
+
+  set table(stroke: 0pt)
+  show table: set block(spacing: 6pt)
+  show table: set text(number-type: "lining", number-width: "tabular")
+  set figure.caption(position: top) 
+  show figure.caption: self => [
+      #align(left)[
+      *#self.supplement*
+      #context [*#self.counter.display(self.numbering)*] \ #self.body ]
+      #v(6pt)
+    ]
 
   // Title Page
   align(center)[
@@ -92,15 +118,21 @@
     let corresponding = ()
     let pos = 0
     for author in authors {
+      author.insert("affiliation_parsed", ())
       if "affiliation" in author {
-        if author.affiliation not in affiliations {
-          affiliations.push(author.affiliation)
+        if type(author.affiliation) == str {
+          author.at("affiliation") = (author.affiliation, )
         }
-        pos = affiliations.position(a => a == author.affiliation)
-        author.insert("affiliation_parsed", pos)
+        for affiliation in author.affiliation {
+          if affiliation not in affiliations {
+            affiliations.push(affiliation)
+          }
+          pos = affiliations.position(a => a == affiliation)
+          author.affiliation_parsed.push(pos)
+        }
       } else {
         // if author has no affiliation, just use the same as the previous author
-        author.insert("affiliation_parsed", pos)
+        author.affiliations_parsed.push(pos)
       }
       parsed_authors.push(author)
       if "corresponding" in author {
@@ -132,7 +164,7 @@
       columns: (1fr,) * calc.min(3, authors_parsed.authors.len()),
       gutter: 1em,
       ..authors_parsed.authors.map(author => align(center)[
-        #author.name#super[#number2letter(author.affiliation_parsed)] \
+        #author.name#super[#author.affiliation_parsed.map(pos => number2letter(pos)).sorted().join(", ")] \
       ]),
     ),
   )
@@ -174,7 +206,8 @@
     ]
   }
 
-
+  // Links
+  show link: set text(number-type: "lining", number-width: "tabular")
   let orcid(height: 10pt, o) = [
     #box(height: height, baseline: 10%, image("assets/orcid.svg") ) #link("https://orcid.org/" + o)
   ]
