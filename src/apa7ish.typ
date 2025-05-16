@@ -60,7 +60,7 @@
   // Set Heading styles
   show heading: it => {
     // set textsize: normal-size)
-
+    v(normal-size / 2)
     if it.level == 1 {
     align(center, text(it, size: normal-size))
     v(15pt, weak: true)
@@ -73,6 +73,14 @@
       align(emph(text(it, size: normal-size, weight: wght)))
       v(normal-size, weak: true)
     }
+  }
+
+  // Lists
+  set list(indent: 1em)
+  show list: self => {
+    v(normal-size, weak: true)
+    self
+    v(normal-size, weak: true)
   }
 
 
@@ -93,7 +101,7 @@
   show figure.caption: self => [
       #align(left)[
       *#self.supplement*
-      #context [*#self.counter.display(self.numbering)*] \ #self.body ]
+      #context [*#self.counter.display(self.numbering)*] \ #emph(self.body) ]
       #v(6pt)
     ]
 
@@ -218,9 +226,12 @@
   heading(outlined: false, numbering: none, text(11pt, weight: "bold", [Author Note]))
 
   // ORCID IDs
-  for author in authors_parsed.authors [
-    #author.name #orcid(author.orcid) \
-  ]
+  for author in authors_parsed.authors {
+    if "orcid" in author {
+    [#author.name #orcid(author.orcid) \ ]
+    }
+  }
+
   // Disclosures and Acknowledgements
   if disclosure != none [
     #disclosure \
@@ -234,10 +245,8 @@
   // Contact Information
   [Correspondence concerning this article should be addressed to
    #authors_parsed.corresponding.name,]
-   if "postal" in authors_parsed.corresponding [ #authors_parsed.corresponding.postal]
-   [
-   Email: #link("mailto:" + authors_parsed.corresponding.email, authors_parsed.corresponding.email)
-   ]
+   if "postal" in authors_parsed.corresponding [ #authors_parsed.corresponding.postal, ]
+   if "email" in authors_parsed.corresponding [Email: #link("mailto:" + authors_parsed.corresponding.email, authors_parsed.corresponding.email)]
    }
 
   pagebreak()
