@@ -30,7 +30,7 @@
   and creatively summarize the main message of their research, as it can have a significant impact on the success
   and visibility of their work.
 ],
-  date: "October 20, 2024",
+  date: "May 16, 2024",
   keywords: [content analysis, citation, bibliometrics],
   funding: [This research received funding by the Ministry of Silly Walks (Grant ID: 123456).]
 )

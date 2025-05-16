@@ -14,10 +14,10 @@ The following works already quite well:
 - Page headers and footers (show short title in header)
 - Option to anonymize the paper
 - Tables: consisting of 3 parts (caption, content, and table notes)
+- figures
 
 This is still not finished:
 
-- figures
 - complete pandoc integration (template for pandoc to replace Latex-based workflows)
 - automatic calculation of page margins (like memoir-class for Latex)
 
@@ -95,3 +95,7 @@ A minimal usage example (taken from the typst documentation):
   caption: [Here is the table caption]
 )
 ```
+
+# Figure Credit
+
+Example figure `template/fig1.svg` taken from this study: Tajima, H., & Fujisawa, F. (2020). *Projectile Trajectory of Penguin's Faeces and Rectal Pressure Revisited*. [arxiv: 2007.00926](https://arxiv.org/abs/2007.00926)
