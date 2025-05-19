@@ -10,7 +10,7 @@ The following works already quite well:
 
 - consistent and simple typesetting
 - correct display of author information / author note
-- citations anfalsed references
+- citations and references
 - Page headers and footers (show short title in header)
 - Option to anonymize the paper
 - Tables: consisting of 3 parts (caption, content, and table notes)
