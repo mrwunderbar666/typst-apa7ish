@@ -1,17 +1,5 @@
-#let script-size = 8pt
-#let footnote-size = 8.5pt
-#let small-size = 9.25pt
-#let normal-size = 11pt
-#let large-size = 12pt
-
-// Utilities for tables
-// thicknesses stolen from latex's booktabs package
-#let heavyrulewidth = 0.08em
-#let lightrulewidth = 0.05em
-#let toprule = table.hline(stroke: heavyrulewidth)
-#let midrule = table.hline(stroke: lightrulewidth)
-#let bottomrule = table.hline(stroke: heavyrulewidth)
-#let tablenote(body) = { align(left, [_Note_. #body]) }
+#import "utils.typ": *
+#import "definitions.typ": *
 
 #let conf(
   title: "An Intriguing Title",
@@ -33,162 +21,150 @@
 ) = {
   // Set the document's basic properties.
   set document(author: authors.map(a => a.name), title: title)
-  // todo: dont show header on first (title) page
-  set page(numbering: "1",
-            paper: papersize,
-            number-align: top + right,
-            margin: 33mm,
-            header: {
-            context if counter(page).get().at(0) > 1 [
-              #smallcaps(lower(title))
-              #h(1fr)
-              #here().page()
-              ]
-            }
-            )
+  set page(
+    numbering: "1",
+    paper: papersize,
+    number-align: top + right,
+    margin: 33mm,
+    header: {
+      context if counter(page).get().at(0) > 1 [
+        #smallcaps(lower(title))
+        #h(1fr)
+        #here().page()
+      ]
+    },
+  )
 
-  set text(font: fontfamily,
-            lang: language,
-            size: normal-size,
-            number-type: text-number-type,
-            number-width: text-number-width)
+  set text(
+    font: fontfamily,
+    lang: language,
+    size: normal-size,
+    number-type: text-number-type,
+    number-width: text-number-width,
+  )
 
-  // Set paragraph spacing.
-  // show par: set block(above: 0.58em, below: 0.58em)
-  set par(spacing: 0.58em)
+  // Set paragraph spacing and leading.
+  // Using Bringhurst's definition of "leading" which is from baseline to baseline
+  // In his terms, the default setting is equivalent to 11/13
+  // Caveat of changing Typst's "leading" definition is that all default settings
+  // have to be set again (that's why there are so many definitions necessary below)
+  set text(top-edge: "baseline", bottom-edge: "baseline")
+  set par(spacing: 1.25em, leading: 1.25em)
+
+  /////////////////////
+  // Style Definitions
+  /////////////////////
 
   // Set Heading styles
   show heading: it => {
-    // set textsize: normal-size)
-    v(normal-size / 2)
     if it.level == 1 {
-    align(center, text(it, size: normal-size))
-    v(15pt, weak: true)
-    }
-    else {
+      v(1em)
+      align(center, text(it, size: normal-size))
+    } else {
       let wght = "bold"
       if it.level > 2 {
         wght = "regular"
       }
+      v(0.5em)
       align(emph(text(it, size: normal-size, weight: wght)))
-      v(normal-size, weak: true)
     }
+    v(1.2em, weak: true)
   }
 
   // Lists
   set list(indent: 1em)
   show list: self => {
-    v(normal-size, weak: true)
+    v(0.5em)
     self
-    v(normal-size, weak: true)
+    v(0.5em)
   }
-
 
   // Bibliography
   set bibliography(title: "References", style: "american-psychological-association")
-  show bibliography: set block(spacing: 0.58em)
-  show bibliography: set par(first-line-indent: 0em)
 
   // Figures
   show figure: set block(above: 2em, below: 2em)
 
   // Tables
-
   set table(stroke: 0pt)
-  show table: set block(spacing: 6pt)
-  show table: set text(number-type: "lining", number-width: "tabular")
-  set figure.caption(position: top) 
+  show table: tbl => {
+    set block(spacing: 1.5em)
+    set text(top-edge: "cap-height", bottom-edge: "baseline", number-type: "lining", number-width: "tabular")
+    tbl
+  }
+  set figure.caption(position: top)
   show figure.caption: self => [
-      #align(left)[
+    #align(left)[
       *#self.supplement*
-      #context [*#self.counter.display(self.numbering)*] \ #emph(self.body) ]
-      #v(6pt)
+      #context [*#self.counter.display(self.numbering)*] \ #emph(self.body)
     ]
-
-  // Title Page
-  align(center)[
-    #if documenttype != none [
-    #smallcaps(lower(documenttype)) \ ]
-    #text(1.5em, title) \
-    #if subtitle != none [
-    #text(1.2em, subtitle) \ ]
-    #v(1em, weak: true)
+    #v(6pt)
   ]
 
-  // utility function: go through all authors and check their affiliations
-  // purpose is to group authors with the same affiliations
-  // returns a dict with two keys:
-  // "authors" (modified author array)
-  // "affiliations": array with unique affiliations
-  let parse_authors(authors) = {
-    let affiliations = ()
-    let parsed_authors = ()
-    let corresponding = ()
-    let pos = 0
-    for author in authors {
-      author.insert("affiliation_parsed", ())
-      if "affiliation" in author {
-        if type(author.affiliation) == str {
-          author.at("affiliation") = (author.affiliation, )
-        }
-        for affiliation in author.affiliation {
-          if affiliation not in affiliations {
-            affiliations.push(affiliation)
-          }
-          pos = affiliations.position(a => a == affiliation)
-          author.affiliation_parsed.push(pos)
-        }
-      } else {
-        // if author has no affiliation, just use the same as the previous author
-        author.affiliations_parsed.push(pos)
-      }
-      parsed_authors.push(author)
-      if "corresponding" in author {
-        if author.corresponding {
-          corresponding = author
-        }
-      }
-    }
-    (authors: parsed_authors,
-     affiliations: affiliations,
-     corresponding: corresponding)
+  // Footnotes
+  set footnote.entry(gap: 0.8em)
+  show footnote.entry: it => {
+    set par(leading: 1.05em)
+    set text(size: footnote-size)
+    it
   }
 
-  // utility function to turn a number into a letter
-  // simulates footnotes
-  let number2letter(num) = {
-    "abcdefghijklmnopqrstuvwxyz".at(num)
+  // Block Quotes
+  show quote.where(block: true): it => {
+    set pad(x: 3em)
+    set par(leading: 1.1em)
+    it
   }
+
+  // Links
+  show link: set text(number-type: "lining", number-width: "tabular")
+
+
+  /////////////////
+  // Make Title Page
+  /////////////////
+
+  align(center)[
+    #if documenttype != none [
+      #smallcaps(lower(documenttype)) \ #v(0.2em)
+    ]
+    #text(1.5em, title) #v(0.4em, weak: true) \
+    #if subtitle != none [
+      #text(1.2em, subtitle) \
+    ]
+    #v(3em, weak: true)
+  ]
 
   let authors_parsed = parse_authors(authors)
 
   // List Authors
   if not anonymous {
-  pad(
-    top: 0.3em,
-    bottom: 0.3em,
-    x: 2em,
-    grid(
-      columns: (1fr,) * calc.min(3, authors_parsed.authors.len()),
-      gutter: 1em,
-      ..authors_parsed.authors.map(author => align(center)[
-        #author.name#super[#author.affiliation_parsed.map(pos => number2letter(pos)).sorted().join(", ")] \
-      ]),
-    ),
-  )
+    pad(
+      top: 0.3em,
+      bottom: 0.3em,
+      x: 2em,
+      grid(
+        columns: (1fr,) * calc.min(3, authors_parsed.authors.len()),
+        gutter: 1em,
+        ..authors_parsed.authors.map(author => align(center)[
+          #author.name#super[#author.affiliation_parsed.map(pos => number2letter(pos)).sorted().join(", ")] \
+        ]),
+      ),
+    )
 
+    v(1em)
 
-  let affiliation_counter = counter("affiliation_counter")
-  affiliation_counter.update(1)
+    let affiliation_counter = counter("affiliation_counter")
+    affiliation_counter.update(1)
 
-  align(center)[
-    #for affiliation in authors_parsed.affiliations [
-      #context super(affiliation_counter.display("a"))#h(1pt)#emph(affiliation) #affiliation_counter.step() \
+    align(center)[
+      #for affiliation in authors_parsed.affiliations [
+        #context super(affiliation_counter.display("a"))#h(1pt)#emph(affiliation) #affiliation_counter.step() \
+      ]
+      #v(1em)
+      #date
+      #v(2em, weak: true)
     ]
-    #v(1em, weak: true)
-    #date
-    #v(2em, weak: true)
-  ]
   } else {
     align(center)[
       #date
@@ -199,55 +175,55 @@
   set par(justify: true)
   // Abstract & Keywords
   if abstract != none {
-    heading(outlined: false, numbering: none, text(11pt, weight: "regular", [Abstract]))
+    heading(outlined: false, numbering: none, text(normal-size, weight: "regular", [Abstract]))
     align(center)[
-      #block(width: 90%, [
-        #align(left)[
-          #abstract \
-          #v(1em, weak: true)
-          #if keywords != none [
-          #emph("Keywords: ") #keywords
+      #block(
+        width: 90%,
+        [
+          #align(left)[
+            #abstract \
+            #v(0.5em)
+            #if keywords != none [
+              #emph("Keywords: ") #keywords
+            ]
           ]
-        ]
-        ]
+        ],
       )
     ]
   }
 
-  // Links
-  show link: set text(number-type: "lining", number-width: "tabular")
-  let orcid(height: 10pt, o) = [
-    #box(height: height, baseline: 10%, image("assets/orcid.svg") ) #link("https://orcid.org/" + o)
-  ]
-
   // Author Note
   if not anonymous {
+    heading(outlined: false, numbering: none, text(normal-size, weight: "bold", [Author Note]))
 
-  heading(outlined: false, numbering: none, text(11pt, weight: "bold", [Author Note]))
-
-  // ORCID IDs
-  for author in authors_parsed.authors {
-    if "orcid" in author {
-    [#author.name #orcid(author.orcid) \ ]
+    // ORCID IDs
+    for author in authors_parsed.authors {
+      set par(spacing: 0.4em)
+      if "orcid" in author [
+        #author.name #orcid(author.orcid) \
+      ]
     }
+
+    // Disclosures and Acknowledgements
+    v(0.5em)
+    if disclosure != none [
+      #disclosure \
+    ] else [
+      We have no conflicts of interest to disclose. \
+    ]
+
+    if funding != none [
+      #funding \
+    ]
+
+    // Contact Information
+    [Correspondence concerning this article should be addressed to
+      #authors_parsed.corresponding.name,]
+    if "postal" in authors_parsed.corresponding [ #authors_parsed.corresponding.postal, ]
+    if (
+      "email" in authors_parsed.corresponding
+    ) [Email: #link("mailto:" + authors_parsed.corresponding.email, authors_parsed.corresponding.email)]
   }
-
-  // Disclosures and Acknowledgements
-  if disclosure != none [
-    #disclosure \
-  ] else [
-    We have no conflicts of interest to disclose. \ ]
-
-  if funding != none [
-    #funding \
-  ]
-
-  // Contact Information
-  [Correspondence concerning this article should be addressed to
-   #authors_parsed.corresponding.name,]
-   if "postal" in authors_parsed.corresponding [ #authors_parsed.corresponding.postal, ]
-   if "email" in authors_parsed.corresponding [Email: #link("mailto:" + authors_parsed.corresponding.email, authors_parsed.corresponding.email)]
-   }
 
   pagebreak()
 
