@@ -1,6 +1,6 @@
 # APA7 (-ish) Template for Typst
 
-[Typst](https://typst.app/) Template that (mostly) complies with APA7 Style (Work in Progress).
+[Typst](https://typst.app/) template for manuscripts that (mostly) complies with APA7 Style (Work in Progress).
 
 The template does not follow all recommendations by the APA Manual, especially when the suggestions break with typographic conventions (such as double line spacing :vomiting_face:). Instead, the goal of this template is that it generates you a high-quality manuscript that has all the important components of the APA7 format, but is aesthetically pleasing.
 
@@ -19,7 +19,7 @@ The following works already quite well:
 This is still not finished:
 
 - complete pandoc integration (template for pandoc to replace Latex-based workflows)
-- automatic calculation of page margins (like memoir-class for Latex)
+- automatic calculation of page margins (currently margins are fixed and optimized for A4 paper)
 
 # Basic Usage
 
@@ -63,7 +63,7 @@ The template has basic support for tables with a handful of utilities. Analogous
 - `#midrule`: used to separate the header row, or to separate a totals row at the bottom
 - `#bottomrule`: used after the last row (technically the same as toprule, but may be useful later to define custom behaviour)
 
-Addtionally, there is a `#tablenote` function to be used to place a table note below the table.
+Additionally, there is a `#tablenote` function to be used to place a table note below the table.
 
 A minimal usage example (taken from the typst documentation):
 
@@ -99,3 +99,8 @@ A minimal usage example (taken from the typst documentation):
 # Figure Credit
 
 Example figure `template/fig1.svg` taken from this study: Tajima, H., & Fujisawa, F. (2020). *Projectile Trajectory of Penguin's Faeces and Rectal Pressure Revisited*. [arxiv: 2007.00926](https://arxiv.org/abs/2007.00926)
+
+# Contributing
+
+- Feel free to raise an issue in the github repository (e.g., tweaks, feature requests, bugs, etc)
+- Pull requests are always welcome!
