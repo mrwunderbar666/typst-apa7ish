@@ -139,27 +139,26 @@
 
   // List Authors
   if not anonymous {
+    let chunked = authors-parsed.authors.chunks(3)
     pad(
       top: 0.3em,
       bottom: 0.3em,
       x: 2em,
-      grid(
-        columns: (1fr,) * calc.min(3, authors-parsed.authors.len()),
-        gutter: 1em,
-        ..authors-parsed.authors.map(author => align(center)[
-          #author.name#super[#author.affiliation-parsed.map(pos => number2letter(pos)).sorted().join(", ")] \
-        ]),
-      ),
+      {
+        for chunk in chunked {
+          stack(dir: ltr,
+                spacing: 3em, 
+                ..chunk.map(author => align(center)[#author.name#super[#author.affiliation-parsed.map(pos => number2letter(pos)).sorted().join(", ")]]))
+          v(1.5em)
+        }
+      },
     )
 
     v(1em)
 
-    let affiliation-counter = counter("affiliation-counter")
-    affiliation-counter.update(1)
-
     align(center)[
-      #for affiliation in authors-parsed.affiliations [
-        #context super(affiliation-counter.display("a"))#h(1pt)#emph(affiliation) #affiliation-counter.step() \
+      #for (idx, affiliation) in authors-parsed.affiliations.enumerate() [
+        #context super(number2letter(idx))#h(1pt)#emph(affiliation) \
       ]
       #v(1em)
       #date
@@ -171,9 +170,8 @@
     ]
   }
 
-
-  set par(justify: true)
   // Abstract & Keywords
+  set par(justify: true)
   if abstract != none {
     heading(outlined: false, numbering: none, text(normal-size, weight: "regular", [Abstract]))
     align(center)[
