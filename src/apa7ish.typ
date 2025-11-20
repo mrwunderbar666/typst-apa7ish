@@ -48,8 +48,8 @@
   // In his terms, the default setting is equivalent to 11/13
   // Caveat of changing Typst's "leading" definition is that all default settings
   // have to be set again (that's why there are so many definitions necessary below)
-  set text(top-edge: "baseline", bottom-edge: "baseline")
-  set par(spacing: 1.25em, leading: 1.25em)
+  set text(top-edge: 1em, bottom-edge: "baseline")
+  set par(spacing: 2pt, leading: 2pt)
 
   /////////////////////
   // Style Definitions
@@ -68,7 +68,7 @@
       v(0.5em)
       align(emph(text(it, size: normal-size, weight: wght)))
     }
-    v(1.2em, weak: true)
+    v(1em, weak: true)
   }
 
   // Lists
@@ -82,37 +82,30 @@
   // Bibliography
   set bibliography(title: "References", style: "american-psychological-association")
 
-  // Figures
-  show figure: set block(above: 2em, below: 2em)
-
   // Tables
   set table(stroke: 0pt)
   show table: tbl => {
-    set block(spacing: 1.5em)
-    set text(top-edge: "cap-height", bottom-edge: "baseline", number-type: "lining", number-width: "tabular")
+    set block(spacing: 0.5em)
+    set text(number-type: "lining", number-width: "tabular")
     tbl
   }
+
+  // Figures
+  show figure: set block(above: 2em, below: 2em)
   set figure.caption(position: top)
   show figure.caption: self => [
     #align(left)[
       *#self.supplement*
       #context [*#self.counter.display(self.numbering)*] \ #emph(self.body)
     ]
-    #v(6pt)
+    #v(0.5em, weak: true)
   ]
 
   // Footnotes
-  set footnote.entry(gap: 0.8em)
+  set footnote.entry(gap: 2pt)
   show footnote.entry: it => {
-    set par(leading: 1.05em)
+    set par(leading: 1pt)
     set text(size: footnote-size)
-    it
-  }
-
-  // Block Quotes
-  show quote.where(block: true): it => {
-    set pad(x: 3em)
-    set par(leading: 1.1em)
     it
   }
 
@@ -148,7 +141,7 @@
         for chunk in chunked {
           stack(dir: ltr,
                 spacing: 3em, 
-                ..chunk.map(author => align(center)[#author.name#super[#author.affiliation-parsed.map(pos => number2letter(pos)).sorted().join(", ")]]))
+                ..chunk.map(author => align(center)[#author.name#super[#h(1pt)#author.affiliation-parsed.map(pos => number2letter(pos)).sorted().join(", ")]]))
           v(1.5em)
         }
       },
@@ -216,7 +209,7 @@
 
     // Contact Information
     [Correspondence concerning this article should be addressed to
-      #authors-parsed.corresponding.name,]
+      #authors-parsed.corresponding.name, ]
     if "postal" in authors-parsed.corresponding [ #authors-parsed.corresponding.postal, ]
     if (
       "email" in authors-parsed.corresponding
